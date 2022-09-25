@@ -42,7 +42,6 @@ AVAILABLE_TASKS = [
 	'binary_classification',
 	'classification',
 	'intent_and_slot_filling',
-	# 'slots_to_intent',
 	'functionality_tests',
 	'cad'
 ]
@@ -52,7 +51,6 @@ AVAILABLE_MODELS_BY_TASK = {
 	'classification': ['roberta'],
 	'intent_and_slot_filling': ['token_tagging_embeddings','litbart', 'litmsbart', 'litmsbart_with_slot2intent', 'bert_token_tagging'],
 	'aaa': ['roberta', 'token_tagging_embeddings', 'litbart', 'litmsbart', 'litmsbart_with_slot2intent', 'bert_token_tagging'],
-	# 'slots_to_intent': ['slots_to_intent'],
 	'functionality_tests': [None],
 }
 

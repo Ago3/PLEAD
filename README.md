@@ -6,6 +6,24 @@ Official repository for the Policy-Aware Explainable Abuse Detection project.
 
 You can download our dataset [here](https://github.com/Ago3/PLEAD/tree/main/DATA).
 
+The `dataset.json` file contains a dictionary with key 'annotations' and value a list of annotations. This is how individual annotations look like:
+```
+{
+	"text": "If there's one insect I really hate it's cockroaches, whenever I see one on the street I want to send them back to Poland",
+	"rule": "threatening",
+	"targets": ["cockroaches"],
+	"protected_characteristics": [{"race": "Poland"}],
+	"threatening_span": "I want to send them back to Poland",
+	"opinionid": 0,
+	"_id": {"$oid": "620155a8418b41db2662579e"},
+	"qid": "acl17083",
+	"copyid": 0,
+	"annotator_id": {"$oid": "619e2b05105e19bf764096e6"},
+	"isindirect": "No"
+},
+```
+Annotations can contain different fields depending on the corresponding intent. You can use `RULES_TO_FIELDS` in `paead_info/info.py` to map intents to the corresponding expected fields.
+
 ## Model
 
 ### Setup
