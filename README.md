@@ -9,18 +9,18 @@ You can download our dataset [here](https://github.com/Ago3/PLEAD/tree/main/DATA
 The `dataset.json` file contains a dictionary with key 'annotations' and value a list of annotations. This is how individual annotations look like:
 ```
 {
-	"text": "If there's one insect I really hate it's cockroaches, whenever I see one on the street I want to send them back to Poland",
-	"rule": "threatening",
-	"targets": ["cockroaches"],
-	"protected_characteristics": [{"race": "Poland"}],
-	"threatening_span": "I want to send them back to Poland",
+	"text": "the fucking corona response by those in charge of this country is abysmal, but hopefully black people will die because of this",
+	"rule": "derogation",
+	"targets": ["black people"],
+	"protected_characteristics": [{"race": "black"}],
+	"derogation_span": "hopefully#will die",
 	"opinionid": 0,
-	"_id": {"$oid": "620155a8418b41db2662579e"},
-	"qid": "acl17083",
+	"_id": {"$oid": "620155a9418b41db266261bf"},
+	"qid": "acl13434",
 	"copyid": 0,
-	"annotator_id": {"$oid": "619e2b05105e19bf764096e6"},
+	"annotator_id": {"$oid": "61bab5e9a937e572d5a2c947"},
 	"isindirect": "No"
-},
+}
 ```
 Annotations can contain different fields depending on the corresponding intent. You can use `RULES_TO_FIELDS` in `paead_info/info.py` to map intents to the corresponding expected fields.
 
@@ -52,7 +52,7 @@ If you use our dataset or model, please cite our paper:
                Bj{\"{o}}rn Ross and
                Mirella Lapata},
   title     = {Explainable Abuse Detection as Intent Classification and Slot Filling},
-  journal={Transactions of the Association for Computational Linguistics},
+  journal   = {Transactions of the Association for Computational Linguistics},
   year      = {2022}
 }
 ```
