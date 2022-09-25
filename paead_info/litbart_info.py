@@ -1,0 +1,32 @@
+import os
+from .info import *
+
+LB_SKETCH_PLACEHOLDER = '<mask>'
+
+
+LB_LR = 2e-5
+LB_BEAM = 5
+LB_MAX_LENGTH = 50
+LB_TGT_MAX_LENGTH = LB_MAX_LENGTH
+LB_EPOCHS = 50
+LB_PRINT_EVERY = 5
+LB_SIZE = 'base'
+LB_BATCH_SIZE = 16
+LB_HATE_PRETRAIN = 0
+LB_EXPERIMENT_NAME = f'checkpoints_{LB_SIZE}_lr{LB_LR}_batch{LB_BATCH_SIZE}_beam{LB_BEAM}_maxLen{LB_MAX_LENGTH}/'
+LB_MODEL_DIR = LOG_DIR + 'litbart/'
+LB_CHECKPOINT_DIR = LB_MODEL_DIR + LB_EXPERIMENT_NAME
+
+LB_RES_FILE = LB_MODEL_DIR + 'scores.tsv'
+
+LB_AAA_CKPT = LB_CHECKPOINT_DIR + 'default/version_SEED/checkpoints/'
+
+if not os.path.exists(LB_MODEL_DIR):
+	os.makedirs(LB_MODEL_DIR)
+
+LB_PREDICTIONS_FILE = LB_MODEL_DIR + f'{LB_EXPERIMENT_NAME[:-1]}.res.tsv'
+
+LB_AAA_ANSWER_FILES_DIR = LB_CHECKPOINT_DIR + 'aaa_answers/'
+if not os.path.exists(LB_AAA_ANSWER_FILES_DIR):
+	os.makedirs(LB_AAA_ANSWER_FILES_DIR)
+LB_AAA_ANSWER_FILES = [f'{LB_AAA_ANSWER_FILES_DIR}{fname}' for fname in AAA_FILES] 

@@ -1,0 +1,28 @@
+from .info import *
+from .intent_slot_info import *
+import os
+
+
+RM_NUM_CLASSES = len(RULES)
+RM_MAX_EPOCHS = 20
+RM_BATCH_SIZE = 16
+RM_LEARNING_RATE = 0.00002
+RM_MAX_LENGTH = 256
+RM_PRINT_EVERY = 10
+RM_OPTIMIZER = 'adam'
+RM_USE_POLICY = False
+
+RM_EXPERIMENT_NAME = f'roberta_lr{RM_LEARNING_RATE}_bs{RM_BATCH_SIZE}_{RM_OPTIMIZER}'
+if not USE_ATTRIBUTES:
+	RM_EXPERIMENT_NAME += '_noAttributes'
+if RM_USE_POLICY:
+	RM_EXPERIMENT_NAME += '_withPolicy'
+RM_MODEL_DIR = LOG_DIR + 'roberta/'
+RM_MODEL_FILE = RM_MODEL_DIR + f'{RM_EXPERIMENT_NAME}.pt'
+
+RM_RES_FILE = RM_MODEL_DIR + 'scores.tsv'
+
+RM_PREDICTIONS_FILE = RM_MODEL_DIR + f'{RM_EXPERIMENT_NAME}.res.tsv'
+RM_AAA_FILES = RM_MODEL_DIR + f'{RM_EXPERIMENT_NAME}_aaa_answer_files/'
+if not os.path.exists(RM_AAA_FILES):
+	os.makedirs(RM_AAA_FILES)
