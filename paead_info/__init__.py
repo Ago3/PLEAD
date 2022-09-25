@@ -5,4 +5,5 @@ from .roberta_info import *
 from .litbart_info import *
 from .litberttag_info import *
 from .litmsbart_info import *
+from .slot_to_intent_info import *
 from .litmsbart_slot2intent_info import *
