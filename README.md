@@ -1,6 +1,6 @@
 # PLEAD
 
-Official repository for the Policy-Aware Explainable Abuse Detection project.
+Official repository for the [Policy-Aware Explainable Abuse Detection project](http://arxiv.org/abs/2210.02659).
 
 ## The PLEAD dataset
 
