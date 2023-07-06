@@ -28,7 +28,7 @@ gdown==3.12.2
 gensim==4.1.2
 google-auth==2.6.0
 google-auth-oauthlib==0.4.6
-grpcio==1.44.0
+grpcio==1.53.0
 huggingface-hub==0.4.0
 hydra-core==1.0.7
 idna==3.3
