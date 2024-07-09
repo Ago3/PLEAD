@@ -24,7 +24,11 @@ class LitBART(pl.LightningModule):
 		super().__init__()
 		self.tokenizer = BartTokenizer.from_pretrained(f'facebook/bart-{LB_SIZE}', add_prefix_space=True)
 		self.tokenizer.add_tokens(ONTOLOGY, special_tokens=True)
-		self.model = BartForConditionalGeneration.from_pretrained(f'facebook/bart-{LB_SIZE}')
+		if LB_PRETRAINED:
+			self.model = BartForConditionalGeneration.from_pretrained(f'facebook/bart-{LB_SIZE}')
+		else:
+			config = BartForConditionalGeneration.from_pretrained(f'facebook/bart-{LB_SIZE}').config
+			self.model = BartForConditionalGeneration(config)
 		self.model.resize_token_embeddings(len(self.tokenizer))
 		self.learning_rate = LB_LR
 		self.corpus = corpus  # Needed for validation

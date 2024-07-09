@@ -2,6 +2,7 @@ import torch
 from paead_info import *
 from paead_utils import *
 import random
+from copy import deepcopy
 
 
 class RobertaDataset(torch.utils.data.Dataset):
@@ -18,6 +19,9 @@ class RobertaDataset(torch.utils.data.Dataset):
         sample = {}
         instance = self.corpus.fullids_to_instances[self.split_idxs[index]]
         sample['fullID'] = instance.fullID
-        sample['text'] = instance.text
+        #shuffled_text = deepcopy(instance.tokenized_text)
+        #random.shuffle(shuffled_text)
+        sample['text'] = ' '.join(instance.tokenized_text[:3])  # ' '.join(shuffled_text)  # tokenized_text[:1]  #.text
+        #sample['text'] = instance.tokenized_text[0]
         sample['label'] = instance.label
         return sample

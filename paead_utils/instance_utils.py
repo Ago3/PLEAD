@@ -117,7 +117,8 @@ def get_productions(tokenized_tree_string, per_token=True, label=False):
 
 
 def tokenize(text):
-	punctuation = string.punctuation.replace('#', ' ') + '“”'
+	#punctuation = string.punctuation.replace('#', ' ') + '“”'
+	punctuation = string.punctuation.replace('_', '').replace('#', ' ') + '“”¦'
 	return [w for w in re.split(f'[ {punctuation}]', text.replace('#', ' # ')) if w]
 
 

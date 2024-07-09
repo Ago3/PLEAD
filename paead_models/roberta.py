@@ -16,13 +16,12 @@ class RobertaModel(nn.Module):
 	def forward(self, x):
 		input_strings = [f'{self.tokenizer.bos_token} {s} {self.tokenizer.sep_token}' for s in x['text']]
 		input_ids = self.tokenizer(
-			input_strings,
+			x['text'],
 			padding="longest",
 			max_length=RM_MAX_LENGTH,
 			truncation=True,
 			return_tensors="pt"
 		)
-
 		input_ids = input_ids.to(self.device)
 		x['label'] = x['label'].to(self.device)
 		res = self.model(**input_ids, labels=x['label'])

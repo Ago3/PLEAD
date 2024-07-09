@@ -1,1 +1,1 @@
-from .pipeline import run_pipeline
+from .pipeline import run_pipeline, pipeline_intent_and_slot_filling
