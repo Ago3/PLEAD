@@ -13,7 +13,7 @@ from copy import deepcopy
 
 
 class Corpus():
-	def __init__(self, task_name=None, toy=False, extended_dataset=False):
+	def __init__(self, task_name=None, toy=False, extended_dataset=False, augmented_dataset=""):
 		assert task_name and ('classification' in task_name or not extended_dataset), f'Can\'t use extended dataset for a non-classification task ({task_name})'
 		self.instances = list()
 		self.task_name = task_name
@@ -21,8 +21,10 @@ class Corpus():
 		self.fullids_to_instances = {}
 		if task_name in ['aaa', 'cad']:
 			self.__create_aaa_corpus__()
-		elif not extended_dataset:
+		elif not (extended_dataset or augmented_dataset):
 			self.__create_corpus_with_annotations__(task_name, toy)
+		elif augmented_dataset:
+			self.__create_corpus_from_augmented_dataset__(task_name, toy, augmented_dataset)
 		else:
 			self.__create_extended_corpus__(task_name, toy)
 
@@ -68,6 +70,35 @@ class Corpus():
 				self.fullids_to_instances[instance.fullID] = instance
 		self.split_idxs = self.__get_ids__(toy, extended_dataset=True)
 
+	def __create_corpus_from_augmented_dataset__(self, task_name: str, toy: bool, augmented_dataset: str):
+		assert augmented_dataset in AUGMENTED_CORPUS_FILE, f"Augmented dataset '{augmented_dataset}' not available."
+		dataset_file = AUGMENTED_CORPUS_FILE[augmented_dataset]
+		if task_name not in ["classification"]:
+			raise Exception
+		print('Creating corpus (training comes from augmented dataset, but validation and test sets are from PLEAD...')
+		# First load PLEAD for validation and test sets
+		self.__create_corpus_with_annotations__(task_name, toy)
+		self.split_idxs[0] = []
+		with open(dataset_file, "r") as f:
+			instances = json.load(f)["instances"]
+		if toy:
+			instances = instances[:5]
+		for instance in instances:
+			instance_json = {
+				'text': instance["reconstructed_prompt"]["text"]
+			}
+			annotation_json = {
+				"qid": instance["ID"],
+				"copyid": 0,
+				# "opinionid": 0,
+				'rule': instance["rule"]
+			}
+			instance = InstanceByTask([instance_json, annotation_json], task_name=task_name)
+			self.instances.append(instance)
+			self.ids_to_instances[instance.qID].append(instance)
+			self.fullids_to_instances[instance.fullID] = instance
+			self.split_idxs[0].append(instance.fullID)
+
 	def __create_aaa_corpus__(self):
 		print('Creating corpus...')
 		qids = 0
@@ -99,7 +130,7 @@ class Corpus():
 					current_split.append(instance.fullID)
 			self.split_idxs.append(current_split)
 
-	def __get_ids__(self, toy, extended_dataset=False):
+	def __get_ids__(self, toy, extended_dataset=False, augmented_dataset: str=""):
 		if toy:
 			self.only_hate_train_ids = [k for k,v in self.fullids_to_instances.items() if v.rule in HATEFUL_RULES]
 			return [list(self.fullids_to_instances.keys())] * 3

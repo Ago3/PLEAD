@@ -10,17 +10,18 @@ MEANING_SKETCH_PLACEHOLDER = '<text>'
 SPECIAL_TOKENS = ['pad', 'unk']
 
 
-def get_corpus(task_name, toy, extended_dataset=False, transform=None):
+def get_corpus(task_name, toy, extended_dataset=False, transform=None, augmented_dataset:str=""):
 	notfound = False
 	if not os.path.exists(LOG_DIR):
 		os.makedirs(LOG_DIR)
 	if not os.path.exists(CORPUS_DIR):
 		os.makedirs(CORPUS_DIR)
 		notfound = True
-	corpus_file = f'{task_name}_{toy}_corpus.pkl' if not extended_dataset else f'ext_{task_name}_{toy}_corpus.pkl'
+	ext = "ext_" if extended_dataset else (augmented_dataset + "_" if augmented_dataset else "")
+	corpus_file = f'{ext}{task_name}_{toy}_corpus.pkl'
 	if not USE_ATTRIBUTES: corpus_file = 'noAttributes_' + corpus_file
 	if notfound or not os.path.exists(CORPUS_DIR + corpus_file):
-		corpus = Corpus(task_name, toy=toy, extended_dataset=extended_dataset)
+		corpus = Corpus(task_name, toy=toy, extended_dataset=extended_dataset, augmented_dataset=augmented_dataset)
 		with open(CORPUS_DIR + corpus_file, 'wb+') as out:
 			pickle.dump(corpus, out)
 		if 'classification' not in task_name and not task_name in ['aaa', 'cad']:

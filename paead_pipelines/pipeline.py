@@ -106,6 +106,9 @@ def pipeline_classification(model_name, corpus, seed):
 	split_ids = corpus.get_split_idxs()
 	is_training_set = [True, False, False]
 	datasets = [Dataset(args, corpus, split_idxs, is_training_set[idx]) for idx, split_idxs in enumerate(split_ids)]
+	print(len(datasets[0]))
+	print(len(datasets[1]))
+	print(len(datasets[2]))
 	model = Model(datasets[0])
 	val_dataset = datasets[1] if len(datasets) == 3 else datasets[0]
 	test_dataset = datasets[2] if len(datasets) == 3 else datasets[0]
@@ -237,23 +240,23 @@ def pipeline_functionality_tests(corpus):
 	functionality_tests(corpus)
 
 
-def run_pipeline(task_name, model_name, toy=False, extended_dataset=False, seed=None):
+def run_pipeline(task_name, model_name, toy=False, extended_dataset=False, seed=None, augmented_dataset:str = ""):
 	assert task_name in AVAILABLE_TASKS, f'{task_name} is not a valid task'
 	assert model_name in AVAILABLE_MODELS_BY_TASK[task_name], f'{model_name} is not supported for task {task_name}'
 	torch.manual_seed(1 if not seed else seed)
 	random.seed(1 if not seed else seed)	
 	if task_name == 'intent_and_slot_filling':
-		corpus = get_corpus(task_name=task_name, toy=toy, transform=None)
+		corpus = get_corpus(task_name=task_name, toy=toy, transform=None, augmented_dataset=augmented_dataset)
 		pipeline_intent_and_slot_filling(model_name, corpus, seed)
 	if task_name in ['binary_classification', 'classification']:
-		corpus = get_corpus(task_name=task_name, toy=toy, extended_dataset=extended_dataset, transform=None)
+		corpus = get_corpus(task_name=task_name, toy=toy, extended_dataset=extended_dataset, transform=None, augmented_dataset=augmented_dataset)
 		pipeline_classification(model_name, corpus, seed)
 	if task_name in ['aaa']:
 		corpus = get_corpus(task_name='binary_classification', toy=toy, extended_dataset=extended_dataset)
 		aaa_corpus = get_corpus(task_name=task_name, toy=toy, extended_dataset=extended_dataset)
 		pipeline_aaa(model_name, corpus, aaa_corpus, seed)
 	if task_name == 'slots_to_intent':
-		corpus = get_corpus(task_name='intent_and_slot_filling', toy=toy)
+		corpus = get_corpus(task_name='intent_and_slot_filling', toy=toy, augmented_dataset=augmented_dataset)
 		pipeline_slots_to_intent(model_name, corpus)
 	if task_name == 'functionality_tests':
 		corpus = get_corpus(task_name='intent_and_slot_filling', toy=toy)
