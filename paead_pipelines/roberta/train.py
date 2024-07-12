@@ -16,7 +16,9 @@ def train(dataset, val_dataset, model, args, seed=None):
         optimizer = optim.Adam(model.parameters(), lr=RM_LEARNING_RATE)
     print_loss_total = 0
 
-    model, current_epoch, best_valid_score = load_checkpoint(model, RM_MODEL_DIR, RM_MODEL_FILE, seed)
+    model_file = f"{args.name}_{RM_MODEL_FILE}"
+
+    model, current_epoch, best_valid_score = load_checkpoint(model, RM_MODEL_DIR, model_file, seed)
     model.to(torch.device("cuda" if torch.cuda.is_available() else "cpu"))
     loader = DataLoader(dataset, batch_size=RM_BATCH_SIZE, pin_memory=True, shuffle=True)
 
@@ -37,7 +39,7 @@ def train(dataset, val_dataset, model, args, seed=None):
         valid_score = validate(val_dataset, model, epoch, verbose=True)
         if valid_score > best_valid_score or best_valid_score < 0:
             best_valid_score = valid_score
-            save_checkpoint(model, RM_MODEL_DIR, RM_MODEL_FILE, epoch, valid_score, seed)
+            save_checkpoint(model, RM_MODEL_DIR, model_file, epoch, valid_score, seed)
             print(f'\nBEST SCORE: {best_valid_score} at epoch {epoch}\n')
 
 

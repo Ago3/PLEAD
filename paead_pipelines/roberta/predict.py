@@ -7,8 +7,8 @@ from collections import defaultdict
 import random
 
 
-def predict(dataset, model, zeroshot=None, seed=None):
-    model, _, s = load_checkpoint(model, RM_MODEL_DIR, RM_MODEL_FILE, seed)
+def predict(dataset, model, model_file, zeroshot=None, seed=None):
+    model, _, s = load_checkpoint(model, RM_MODEL_DIR, model_file, seed)
     print('Best score: ', s)
     model.to(torch.device("cuda" if torch.cuda.is_available() else "cpu"))
     with torch.no_grad():

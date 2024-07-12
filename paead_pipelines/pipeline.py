@@ -114,7 +114,7 @@ def pipeline_classification(model_name, corpus, seed):
 	test_dataset = datasets[2] if len(datasets) == 3 else datasets[0]
 	if not 'zero_shot' in model_name:
 		train(datasets[0], val_dataset, model, args, seed)
-	predictions, predictions_ids = predict(test_dataset, model, zeroshot=('zero_shot' in model_name), seed=seed)
+	predictions, predictions_ids = predict(test_dataset, model, f"{args.name}_{RM_MODEL_FILE}", zeroshot=('zero_shot' in model_name), seed=seed)
 	taskEval = ClassificationEval(corpus, predictions_ids, predictions)
 	print('\nMulti-class Evaluation:')
 	scores = taskEval.eval(tests=None, arg=False)
