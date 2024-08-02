@@ -190,11 +190,11 @@ class FlexibleInstance():
 
 	def __set_label__(self, task_name: str, tree: Dict):
 		if task_name == 'binary_classification':
-			label = 1 if self.rule in HATEFUL_RULES else 0
-			tokenized_label = None
+			self.label = 1 if self.rule in HATEFUL_RULES else 0
+			self.tokenized_label = None
 		elif task_name == 'classification':
-			label = RULES.index(self.rule)
-			tokenized_label = None
+			self.label = RULES.index(self.rule)
+			self.tokenized_label = None
 		elif task_name == 'intent_and_slot_filling':
 
 			def explore_node(node: Dict) -> List:
