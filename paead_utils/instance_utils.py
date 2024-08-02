@@ -18,6 +18,14 @@ def isSpecialToken(token):
 	return False
 
 
+def get_slot_name(slot: str):
+	if slot == "non_protected_target": slot = "target"
+	if slot == "pc": slot = "protected_characteristic"
+	slot = f"SL:{title(slot)}"
+	assert slot in ONTOLOGY, f"Slot {slot} does not occur in the ontology."
+	return slot
+
+
 def level_to_slot(tokenized_tree_string, label=False):
 	def rec_step(tree, level_to_slot, current_level=-1):
 		if not tree:
@@ -318,3 +326,21 @@ def annotation_fix(s):
 		s = "love#don't"
 	return s
 
+
+def convert_label_to_layered_tree(instance):
+	possible_subjects = ["SL:Target", "SL:HateEntity"]
+	subjects = [s in instance.label for s in possible_subjects]
+	if any(subjects):
+		# Need to layer all the slots that come after Target or Hate Entity under this slot
+		next_slot_idx = instance.tokenized_label.index((s := possible_subjects[subjects.index(True)])) + 1
+		while not instance.tokenized_label[next_slot_idx] == "]":
+			next_slot_idx += 1
+		if next_slot_idx < len(instance.tokenized_label):
+			instance.tokenized_label.pop(next_slot_idx)
+			instance.tokenized_label += ["]"]
+	elif any([token.startswith("SL") for token in instance.tokenized_label]):
+		# Need to layer all the slots to an unspecified target
+		injection_idx = instance.tokenized_label.index(",") + 1
+		instance.tokenized_label = instance.tokenized_label[:injection_idx] + ["[", "SL:Target", ",", "<UNSPECIFIED>", ","] + instance.tokenized_label[injection_idx:] + ["]"]
+	instance.label = " ".join(instance.tokenized_label)
+	return instance
