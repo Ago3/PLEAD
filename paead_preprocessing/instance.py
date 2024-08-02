@@ -3,6 +3,7 @@ from paead_utils import *
 import string
 import re
 import warnings
+from typing import Dict, List
 
 
 class Field():
@@ -88,9 +89,8 @@ class Instance():
 					self.subfields['protected_characteristics'] = characteristics
 
 			if 'stance' in annotation:
-				stance_attr = list(annotation['stance'].keys())[0]
-				if not stance_attr == 'support':
-					stance_span = annotation['stance'][stance_attr]
+				if 'against' in annotation['stance']:
+					stance_span = annotation['stance']["against"]
 					field_text = ' '.join(stance_span.split())  # Remove multiple spaces
 					# start_idx = self.text.find(field_text)
 					# end_idx = start_idx + len(field_text)
@@ -98,7 +98,7 @@ class Instance():
 					start_idx = match.start() if match else -1
 					end_idx = match.end() if match else -1
 					if field_text == '<empty>': field_text = ''
-					stance_field = Field(start_idx, end_idx, self.text, field_text, 'stance', attribute=stance_attr)
+					stance_field = Field(start_idx, end_idx, self.text, field_text, 'stance', attribute="against")
 					self.subfields[stance_field.field_name] = stance_field
 
 			for field_name in RULES_TO_FIELDS[annotation['rule']]:
@@ -116,6 +116,9 @@ class Instance():
 					start_idx = match.start() if match else -1
 					end_idx = match.end() if match else -1
 					self.subfields[key] = Field(start_idx, end_idx, self.text, field_text, key.split('_')[0], attribute=attribute)
+
+			if self.rule == "nothate" and "entity_span" in self.subfields and "support_span" in self.subfields and "negative_stance" not in self.subfields:
+				del self.subfields["support_span"]
 
 
 class InstanceByTask(Instance):
@@ -171,3 +174,51 @@ class InstanceByTask(Instance):
 class PlaceholderInstance(Instance):
 	def __init__(self, tokenized_label):
 		self.tokenized_label = tokenized_label
+
+
+class FlexibleInstance():
+	def __init__(self, annotation: Dict, task_name: str):
+		self.qID = annotation['qid']
+		self.copyID = annotation['copyid']
+		self.opinionID = 0
+		self.fullID = f'{self.qID}_{self.copyID}_{self.opinionID}'
+		self.rule = annotation['rule']
+		self.text = annotation['text']
+		self.tokenized_text = tokenize(self.text)
+		self.__set_label__(task_name, annotation["tree"])
+
+
+	def __set_label__(self, task_name: str, tree: Dict):
+		if task_name == 'binary_classification':
+			label = 1 if self.rule in HATEFUL_RULES else 0
+			tokenized_label = None
+		elif task_name == 'classification':
+			label = RULES.index(self.rule)
+			tokenized_label = None
+		elif task_name == 'intent_and_slot_filling':
+
+			def explore_node(node: Dict) -> List:
+				if "intent" in node:
+					label = ["[", node["intent"], ","]
+				elif node["slot"] == "unspecified_target":
+					label = ["[", "SL:Target", ",", "<UNSPECIFIED>", ","]
+				elif node["span"] == [""]:
+					# for spans that were not reconstructed
+					return []
+				else:
+					label = ["[", get_slot_name(node["slot"]), ","] + node["span"].split() + [","]
+				for subnode in node["children"]:
+					label += explore_node(subnode)
+					label += [","]
+				label.pop(-1)
+				label += ["]"]
+				return label
+
+			self.tokenized_label = explore_node(tree)
+			offset = " "
+			for token in self.tokenized_label:
+				if token == "[":
+					offset += "    "
+				elif token == "]":
+					offset = offset[:-4]
+			self.label = " ".join(self.tokenized_label)

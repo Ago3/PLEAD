@@ -1,6 +1,6 @@
 from paead_info import *
-from paead_utils import generate_shuffled_instances
-from .instance import Instance, InstanceByTask
+from paead_utils import generate_shuffled_instances, convert_label_to_layered_tree
+from .instance import Instance, InstanceByTask, FlexibleInstance
 import json
 import csv
 from collections import defaultdict
@@ -73,31 +73,30 @@ class Corpus():
 	def __create_corpus_from_augmented_dataset__(self, task_name: str, toy: bool, augmented_dataset: str):
 		assert augmented_dataset in AUGMENTED_CORPUS_FILE, f"Augmented dataset '{augmented_dataset}' not available."
 		dataset_file = AUGMENTED_CORPUS_FILE[augmented_dataset]
-		if task_name not in ["classification"]:
-			raise Exception
-		print('Creating corpus (training comes from augmented dataset, but validation and test sets are from PLEAD...')
+		print('Creating corpus (training comes from augmented dataset, but validation and test sets are from PLEAD)...')
 		# First load PLEAD for validation and test sets
 		self.__create_corpus_with_annotations__(task_name, toy)
+		self.instances = [convert_label_to_layered_tree(instance) for instance in self.instances]
 		self.split_idxs[0] = []
 		with open(dataset_file, "r") as f:
 			instances = json.load(f)["instances"]
 		if toy:
 			instances = instances[:5]
 		for instance in instances:
-			instance_json = {
-				'text': instance["reconstructed_prompt"]["text"]
-			}
-			annotation_json = {
+			annotation = {
 				"qid": instance["ID"],
 				"copyid": 0,
 				# "opinionid": 0,
-				'rule': instance["rule"]
+				'rule': instance["rule"],
+				'text': instance["reconstructed_prompt"]["text"],
+				'tree': instance["layered_tree"]
 			}
-			instance = InstanceByTask([instance_json, annotation_json], task_name=task_name)
+			instance = FlexibleInstance(annotation, task_name=task_name)
 			self.instances.append(instance)
 			self.ids_to_instances[instance.qID].append(instance)
 			self.fullids_to_instances[instance.fullID] = instance
 			self.split_idxs[0].append(instance.fullID)
+
 
 	def __create_aaa_corpus__(self):
 		print('Creating corpus...')
