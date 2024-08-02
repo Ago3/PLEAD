@@ -76,7 +76,8 @@ class Corpus():
 		print('Creating corpus (training comes from augmented dataset, but validation and test sets are from PLEAD)...')
 		# First load PLEAD for validation and test sets
 		self.__create_corpus_with_annotations__(task_name, toy)
-		self.instances = [convert_label_to_layered_tree(instance) for instance in self.instances]
+		if "classification" not in task_name:
+			self.instances = [convert_label_to_layered_tree(instance) for instance in self.instances]
 		self.split_idxs[0] = []
 		with open(dataset_file, "r") as f:
 			instances = json.load(f)["instances"]
