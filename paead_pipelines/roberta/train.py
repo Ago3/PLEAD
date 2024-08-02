@@ -16,7 +16,7 @@ def train(dataset, val_dataset, model, args, seed=None):
         optimizer = optim.Adam(model.parameters(), lr=RM_LEARNING_RATE)
     print_loss_total = 0
 
-    model_file = f"{args.name}_{RM_MODEL_FILE}"
+    model_file = f"{args.name}_{args.seed}_{RM_MODEL_FILE}"
 
     model, current_epoch, best_valid_score = load_checkpoint(model, RM_MODEL_DIR, model_file, seed)
     model.to(torch.device("cuda" if torch.cuda.is_available() else "cpu"))
