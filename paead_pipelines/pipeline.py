@@ -102,14 +102,18 @@ def pipeline_classification(model_name, corpus, seed):
 		from paead_pipelines.roberta import train, predict
 		resfile = RM_RES_FILE
 		exp_name = RM_EXPERIMENT_NAME
+		use_class_weights = RM_USE_CLASS_WEIGHTS and corpus.task_name == "classification"
+		if RM_USE_CLASS_WEIGHTS and corpus.task_name == "binary_classification":
+			print("WARNING: The request for class weights is ignored for binary_classification task.")
 
 	split_ids = corpus.get_split_idxs()
 	is_training_set = [True, False, False]
 	datasets = [Dataset(args, corpus, split_idxs, is_training_set[idx]) for idx, split_idxs in enumerate(split_ids)]
+	class_weights = compute_class_weights(datasets[0]) if use_class_weights else None
 	print(len(datasets[0]))
 	print(len(datasets[1]))
 	print(len(datasets[2]))
-	model = Model(datasets[0])
+	model = Model(datasets[0], class_weights)
 	val_dataset = datasets[1] if len(datasets) == 3 else datasets[0]
 	test_dataset = datasets[2] if len(datasets) == 3 else datasets[0]
 	if not 'zero_shot' in model_name:

@@ -2,6 +2,9 @@ from paead_preprocessing import Corpus
 from paead_info import *
 from paead_utils import get_slots_offset
 from itertools import groupby
+from typing import List
+from collections import Counter
+import torch
 import os
 import pickle
 
@@ -64,3 +67,10 @@ def create_src_tgt_files(corpus, filename_prefix):
 				template_or_tree.write(' '.join(meaning_sketch) + '\n')
 				template_or_tree.write(' '.join(instance.tokenized_label[3:-1]) + '\n')
 				tgt_intents.write(instance.tokenized_label[1] + '\n')
+
+def compute_class_weights(dataset: torch.utils.data.Dataset) -> List[float]:
+	labels = [instance["label"] for instance in dataset]
+	labels_distribution = Counter(labels)
+	# Assign a weight to each class that inversely proportional to its frequency
+	labels_weights = {k: len(labels)/v for k, v in labels_distribution.items()}
+	return [labels_weights[i] for i in range(max(labels_weights.keys()) + 1)]
