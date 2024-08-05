@@ -31,10 +31,10 @@ def train(model, summary_data, disable_training=False):
 	                max_epochs = epochs,
 	                min_epochs = 1,
 	                # auto_lr_find = False,
-	                checkpoint_callback = True,
+	                # checkpoint_callback = True,
 	                callbacks = checkpoint,
 	                reload_dataloaders_every_n_epochs = reload_epochs,
-	                progress_bar_refresh_rate = 10  # , deterministic=True
+	                # progress_bar_refresh_rate = 10  # , deterministic=True
                     )
 	# Fit the instantiated model to the data
 	if not disable_training:
