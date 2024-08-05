@@ -24,7 +24,7 @@ class MeaningSketchesBart(BartForConditionalGeneration):
     def __init__(self):
         super().__init__(BartConfig())
         self.tokenizer = BartTokenizer.from_pretrained(f'facebook/bart-{LMSB_SIZE}', add_prefix_space=True)
-        self.tokenizer.add_tokens(ONTOLOGY, special_tokens=True)
+        self.tokenizer.add_tokens(ONTOLOGY + ["<UNSPECIFIED>"], special_tokens=True)
         if LMSB_PRETRAINED:
             self.model = BartForConditionalGeneration.from_pretrained(f'facebook/bart-{LMSB_SIZE}')
         else:
