@@ -327,19 +327,6 @@ output.encoder_hidden_states, output.encoder_attentions), sketch_encoding, **kwa
         return predictions_ids, predictions, sketches
 
     def on_validation_epoch_end(self):
-        # print(len(self.predictions_ids))
-        # print(len(self.predictions))
-        # print(self.predictions_ids)
-        # print()
-        # predictions_ids = list(itertools.chain(*self.predictions_ids))
-        # print(predictions_ids)
-        # print()
-        # print(self.predictions)
-        # print()
-        # predictions = list(itertools.chain(*self.predictions))
-        # print(predictions)
-        # sketches = list(itertools.chain(*self.sketches))
-
         predictions_ids = self.predictions_ids
         predictions = self.predictions
         sketches = self.sketches
@@ -358,25 +345,33 @@ output.encoder_hidden_states, output.encoder_attentions), sketch_encoding, **kwa
 
         return metrics
 
+    def on_test_epoch_start(self) -> None:
+        super().on_test_epoch_start()
+        self.predictions_ids = []
+        self.predictions = []
+        self.sketches = []
+        return
+
     def test_step(self, batch, batch_idx, dataloader_idx=0):
         src_ids, src_mask = self.encode_sentences(batch['text'])
         
         predictions, sketches = self.generate_text(src_ids, src_mask)
         predictions_ids = batch['fullID']
 
+        self.predictions_ids += predictions_ids
+        self.predictions += predictions
+        self.sketches += sketches
+
         return predictions_ids, predictions, sketches
 
-    def test_epoch_end(self, outs):
+    def on_test_epoch_end(self):
         if not self.corpus.task_name in ['aaa', 'cad']:
-            outs = [outs]
+            self.predictions_ids = [self.predictions_ids]
+            self.predictions = [self.predictions]
+            self.sketches = [self.sketches]
             self.predictions_file = [self.predictions_file]
-        # if self.corpus.task_name in ['cad']:
-            # outs = [outs]
-        for dataloader_outs, predictions_file in zip(outs, self.predictions_file):
-            predictions_ids, predictions, sketches = list(zip(*dataloader_outs))
-            predictions_ids = list(itertools.chain(*predictions_ids))
-            predictions = list(itertools.chain(*predictions))
-            sketches = list(itertools.chain(*sketches))
+
+        for predictions_ids, predictions, sketches, predictions_file in zip(self.predictions_ids, self.predictions, self.sketches, self.predictions_file):
 
             if self.corpus.task_name in ['aaa', 'cad']:
 
@@ -416,6 +411,57 @@ output.encoder_hidden_states, output.encoder_attentions), sketch_encoding, **kwa
 
                 self.log_dict(metrics)
                 return metrics
+
+    # def test_epoch_end(self, outs):
+    #     if not self.corpus.task_name in ['aaa', 'cad']:
+    #         outs = [outs]
+    #         self.predictions_file = [self.predictions_file]
+    #     # if self.corpus.task_name in ['cad']:
+    #         # outs = [outs]
+    #     for dataloader_outs, predictions_file in zip(outs, self.predictions_file):
+    #         predictions_ids, predictions, sketches = list(zip(*dataloader_outs))
+    #         predictions_ids = list(itertools.chain(*predictions_ids))
+    #         predictions = list(itertools.chain(*predictions))
+    #         sketches = list(itertools.chain(*sketches))
+
+    #         if self.corpus.task_name in ['aaa', 'cad']:
+
+    #             with open(predictions_file + f'.exp.{self.seed}', 'w+') as outfile:
+    #                 outfile.write('\n'.join([f"{pred_id}\t{' '.join(prediction)}\t{sketch}" for pred_id, prediction, sketch in zip (predictions_ids, predictions, sketches)]))
+
+    #             binary_predictions = [0 if 'IN:NotHateful' in prediction else 1 for prediction in predictions]
+    #             instances = [self.corpus.fullids_to_instances[pred_id] for pred_id in predictions_ids]
+
+    #             with open(predictions_file + f'.{self.seed}', 'w+') as outfile:
+    #                 outfile.write('\n'.join([f"{instance.text}\t{int(instance.rule == 'hate')}\t{prediction}" for instance, prediction in zip (instances, binary_predictions)]))
+            
+    #         else:
+
+    #             with open(predictions_file, 'w+') as outfile:
+    #                 outfile.write('\n'.join([f"{pred_id}\t{' '.join(prediction)}\t{sketch}" for pred_id, prediction, sketch in zip (predictions_ids, predictions, sketches)]))
+
+    #             taskEval = IntentSlotEval(self.corpus, predictions_ids, predictions)
+    #             scores = taskEval.eval(tests=None, arg=False, verbose=False)
+    #             metrics = {k: s for k, s in zip(taskEval.available_tests, scores)}
+    #             hate_scores = taskEval.eval(tests=None, arg=False, verbose=False, true_class='hate')
+    #             hate_metrics = {f'hate_{k}': s for k, s in zip(taskEval.available_tests, hate_scores)}
+    #             nothate_scores = taskEval.eval(tests=None, arg=False, verbose=False, true_class='nothate')
+    #             nothate_metrics = {f'nothate_{k}': s for k, s in zip(taskEval.available_tests, nothate_scores)}
+    #             threatening_scores = taskEval.eval(tests=None, arg=False, verbose=False, true_class='all', instancefilter=(lambda x: x.rule == 'threatening'))
+    #             comparison_scores = taskEval.eval(tests=None, arg=False, verbose=False, true_class='all', instancefilter=(lambda x: x.rule == 'comparison'))
+    #             hatecrime_scores = taskEval.eval(tests=None, arg=False, verbose=False, true_class='all', instancefilter=(lambda x: x.rule == 'hatecrime'))
+    #             derogation_scores = taskEval.eval(tests=None, arg=False, verbose=False, true_class='all', instancefilter=(lambda x: 'derogation_span' in x.subfields))
+    #             animosity_scores = taskEval.eval(tests=None, arg=False, verbose=False, true_class='all', instancefilter=(lambda x: 'animosity_span' in x.subfields))
+    #             explicit_scores = taskEval.eval(tests=None, arg=False, verbose=False, true_class='all', instancefilter=(lambda x: ('animosity_span' not in x.subfields) and (not x.rule == 'nothate')))
+
+    #             for subfix, sub_scores in zip(['', '.hate', '.nothate', '.threatening', '.comparison', '.hatecrime', '.derogation', '.animosity', '.explicit'], [scores, hate_scores, nothate_scores, threatening_scores, comparison_scores, hatecrime_scores, derogation_scores, animosity_scores, explicit_scores]):
+    #                 with open(self.res_file + subfix, 'a+') as out:
+    #                     sub_scores = [str(s) for s in sub_scores]
+    #                     out.write(f'{self.experiment_name}\t{self.seed}\t' + '\t'.join(sub_scores) + '\n')
+    #             metrics = {**metrics, **hate_metrics, **nothate_metrics}
+
+    #             self.log_dict(metrics)
+    #             return metrics
     
     # Method that generates text using the BartForConditionalGeneration's generate() method
     def generate_text(self, src_ids, attention_mask, eval_beams=LMSB_BEAM, early_stopping=True, max_len=LMSB_TGT_MAX_LENGTH):
