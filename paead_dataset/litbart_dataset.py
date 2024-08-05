@@ -30,7 +30,7 @@ class LitBARTDataset(Dataset):
 		sample['label'] = ' '.join(instance.tokenized_label[3:-1])
 		sample['intent'] = RULES.index(instance.rule)
 		sample['binary_intent'] = int(instance.rule in HATEFUL_RULES)
-		sample['negative_stance'] = 1.0 if 'negative_stance' in instance.subfields else 0.0
+		# sample['negative_stance'] = 1.0 if 'negative_stance' in instance.subfields else 0.0
 		return sample
 
 
@@ -94,7 +94,7 @@ class LitBARTTaggingDataset(Dataset):
 		sample['label'] = ' '.join(instance.tokenized_label[3:-1])
 		sample['intent'] = RULES.index(instance.rule)
 		sample['binary_intent'] = int(instance.rule in HATEFUL_RULES)
-		sample['negative_stance'] = 1.0 if 'negative_stance' in instance.subfields else 0.0
+		# sample['negative_stance'] = 1.0 if 'negative_stance' in instance.subfields else 0.0
 		return sample
 
 	def __create_OvO_matrix__(self):
