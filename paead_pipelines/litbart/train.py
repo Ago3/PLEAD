@@ -26,7 +26,7 @@ def train(model, summary_data, disable_training=False):
 		assert False, 'Logger dir has not been set'
 	tb_logger = pl_loggers.TensorBoardLogger(logger_dir)
 	checkpoint = ModelCheckpoint(filename='{epoch}-{step}-{val_prod_f1:.4f}', monitor='val_prod_f1', mode='max', save_top_k=1, every_n_epochs=1, save_on_train_epoch_end=True, auto_insert_metric_name=True)
-	trainer = pl.Trainer(gpus = 1,
+	trainer = pl.Trainer(accelerator = "auto",
 					logger = tb_logger,
 	                max_epochs = epochs,
 	                min_epochs = 1,
