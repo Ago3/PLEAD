@@ -327,8 +327,12 @@ output.encoder_hidden_states, output.encoder_attentions), sketch_encoding, **kwa
         return predictions_ids, predictions, sketches
 
     def on_validation_epoch_end(self):
+        print(self.predictions_ids.shape)
+        print(self.predictions.shape)
         predictions_ids = list(itertools.chain(*self.predictions_ids))
+        print(prediction_ids)
         predictions = list(itertools.chain(*self.predictions))
+        print(predictions)
         sketches = list(itertools.chain(*self.sketches))
 
         with open(self.predictions_file, 'w+') as outfile:
