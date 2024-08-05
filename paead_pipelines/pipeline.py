@@ -41,7 +41,7 @@ def pipeline_intent_and_slot_filling(model_name, corpus, seed):
 		model = Model(corpus, LMSB_PREDICTIONS_FILE, LMSB_RES_FILE, LMSB_EXPERIMENT_NAME, seed)
 		summary_data = Dataset(corpus, corpus.get_split_idxs(), hate_pretraining=LMSB_HATE_PRETRAIN)
 		trainer = train(model, summary_data)
-		trainer.test(ckpt_path="best", dataloaders=[summary_data.test_dataloader()])
+		trainer.test(ckpt_path=trainer.callbacks[-1].best_model_path, dataloaders=[summary_data.test_dataloader()])
 		return
 	elif model_name in ['litmsbart_with_slot2intent']:
 		from paead_dataset import LitBARTDataModule as Dataset
