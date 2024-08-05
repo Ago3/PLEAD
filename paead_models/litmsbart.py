@@ -321,8 +321,8 @@ output.encoder_hidden_states, output.encoder_attentions), sketch_encoding, **kwa
         predictions_ids = batch['fullID']
 
         self.predictions_ids += predictions_ids
-        self.predictions = predictions
-        self.sketches = sketches
+        self.predictions += predictions
+        self.sketches += sketches
 
         return predictions_ids, predictions, sketches
 
