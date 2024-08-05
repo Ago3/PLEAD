@@ -327,18 +327,22 @@ output.encoder_hidden_states, output.encoder_attentions), sketch_encoding, **kwa
         return predictions_ids, predictions, sketches
 
     def on_validation_epoch_end(self):
-        print(len(self.predictions_ids))
-        print(len(self.predictions))
-        print(self.predictions_ids)
-        print()
-        predictions_ids = list(itertools.chain(*self.predictions_ids))
-        print(predictions_ids)
-        print()
-        print(self.predictions)
-        print()
-        predictions = list(itertools.chain(*self.predictions))
-        print(predictions)
-        sketches = list(itertools.chain(*self.sketches))
+        # print(len(self.predictions_ids))
+        # print(len(self.predictions))
+        # print(self.predictions_ids)
+        # print()
+        # predictions_ids = list(itertools.chain(*self.predictions_ids))
+        # print(predictions_ids)
+        # print()
+        # print(self.predictions)
+        # print()
+        # predictions = list(itertools.chain(*self.predictions))
+        # print(predictions)
+        # sketches = list(itertools.chain(*self.sketches))
+
+        predictions_ids = self.predictions_ids
+        predictions = self.predictions
+        sketches = self.sketches
 
         with open(self.predictions_file, 'w+') as outfile:
             outfile.write('\n'.join([f"{pred_id}\t{' '.join(prediction)}\t{sketch}" for pred_id, prediction, sketch in zip (predictions_ids, predictions, sketches)]))
