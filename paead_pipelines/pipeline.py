@@ -143,8 +143,6 @@ def pipeline_aaa(model_name, corpus, aaa_corpus, seed):
 		from paead_models import RobertaModel as Model
 		from paead_pipelines.roberta import train, predict
 		aaa_files_dir = RM_AAA_FILES
-		use_class_weights = RM_USE_CLASS_WEIGHTS and corpus.task_name == "aaa"
-		class_weights = compute_class_weights(datasets[0]) if use_class_weights else None
 
 	elif model_name in ['token_tagging_embeddings']:
 		parser.add_argument('--max-epochs', type=int, default=TT_MAX_EPOCHS)
@@ -226,7 +224,7 @@ def pipeline_aaa(model_name, corpus, aaa_corpus, seed):
 		embeddings = load_embeddings(embedding_size, word_to_index=datasets[0].word_to_index, pad_token=datasets[0].pad_token)
 		model = Model(datasets[0], embeddings)
 	elif model_name == "roberta":
-		model = Model(datasets[0], class_weights)
+		model = Model(datasets[0])
 	else:
 		model = Model(datasets[0])
 	aaa_datasets = [Dataset(args, aaa_corpus, split_idxs, False) for split_idxs in aaa_corpus.get_split_idxs()]
