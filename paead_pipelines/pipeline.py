@@ -38,7 +38,8 @@ def pipeline_intent_and_slot_filling(model_name, corpus, seed):
 		from paead_dataset import LitBARTDataModule as Dataset
 		from paead_models import LitMSBART as Model
 		from paead_pipelines.litbart import train
-		model = Model(corpus, LMSB_PREDICTIONS_FILE, LMSB_RES_FILE, LMSB_EXPERIMENT_NAME, seed)
+		assert LMSB_PREDICTIONS_FILE.endswith(".res.tsv")
+		model = Model(corpus, f"{LMSB_PREDICTIONS_FILE[:-8]}_{seed}_{LMSB_PREDICTIONS_FILE[-8:]}", LMSB_RES_FILE, LMSB_EXPERIMENT_NAME, seed)
 		summary_data = Dataset(corpus, corpus.get_split_idxs(), hate_pretraining=LMSB_HATE_PRETRAIN)
 		trainer = train(model, summary_data)
 		trainer.test(ckpt_path=trainer.callbacks[-1].best_model_path, dataloaders=[summary_data.test_dataloader()])
@@ -47,7 +48,8 @@ def pipeline_intent_and_slot_filling(model_name, corpus, seed):
 		from paead_dataset import LitBARTDataModule as Dataset
 		from paead_models import LitMSBARTwithSlot2Intent as Model
 		from paead_pipelines.litbart import train
-		model = Model(corpus, LMSBwS2I_PREDICTIONS_FILE, LMSBwS2I_RES_FILE, LMSBwS2I_EXPERIMENT_NAME, seed)
+		assert LMSBwS2I_PREDICTIONS_FILE.endswith(".res.tsv")
+		model = Model(corpus, f"{LMSBwS2I_PREDICTIONS_FILE[:-8]}_{seed}_{LMSBwS2I_PREDICTIONS_FILE[-8:]}", LMSBwS2I_RES_FILE, LMSBwS2I_EXPERIMENT_NAME, seed)
 		summary_data = Dataset(corpus, corpus.get_split_idxs(), hate_pretraining=LMSBwS2I_HATE_PRETRAIN)
 		trainer = train(model, summary_data)
 		trainer.test(ckpt_path="best", dataloaders=[summary_data.test_dataloader()])
@@ -228,10 +230,10 @@ def pipeline_aaa(model_name, corpus, aaa_corpus, seed):
 		print('Current test: ', testname)
 		with open(aaa_files_dir + f'{seed}_' + testname, 'w+') as out:
 			if model_name == 'token_tagging_embeddings':
-				predictions, predictions_ids = predict(testset, model, seed)
+				predictions, predictions_ids = predict(testset, model, f"{args.name}_{args.seed}_{RM_MODEL_FILE}", seed)
 				predictions = [0 if 'IN:NotHateful' in p else 1 for p in predictions]
 			else:
-				predictions, predictions_ids = predict(testset, model, zeroshot=('zero_shot' in model_name), seed=seed)
+				predictions, predictions_ids = predict(testset, model, f"{args.name}_{args.seed}_{RM_MODEL_FILE}", zeroshot=('zero_shot' in model_name), seed=seed)
 			if any([p > 1 for p in predictions]):  # if per-rule predictions instead of binary
 				predictions = [0 if p >= len(HATEFUL_RULES) else 1 for p in predictions]
 			for p_id, p in zip(predictions_ids, predictions):
