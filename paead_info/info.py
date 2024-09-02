@@ -66,7 +66,7 @@ EXTENDED_DATASET_FILE = DATA_DIR + 'classification/dataset.csv'
 TOY_ANNOTATED_DATA = DATA_DIR + 'toy_dataset.json'
 EXTENDED_TOY_DATASET_FILE = DATA_DIR + 'classification/toy_dataset.csv'
 AUGMENTED_CORPUS_FILE = {
-	"balanced_dataset": "../gpt3_augmentation/augmented_dataset.json",
+	"balanced_dataset": "../../gpt3_augmentation/augmented_dataset.json",
 }
 
 AAA_DIR = DATA_DIR + 'classification/aaa/'
