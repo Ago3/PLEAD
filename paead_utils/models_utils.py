@@ -44,10 +44,9 @@ def load_checkpoint(model, modeldir, modelfile, seed=None):
 			device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 			checkpoint = torch.load(modeldir + filename, map_location=device)
 			print('Loading model from epoch: ', checkpoint['epoch'])
-			if "class_weights" in checkpoint['model_state_dict']:
-				del checkpoint['model_state_dict']["class_weights"]
-			if "loss_fct" in checkpoint['model_state_dict']:
-				del checkpoint['model_state_dict']["loss_fct"]
+			for k, v in checkpoint['model_state_dict'].items():
+				if "class_weights" in k or "loss_fct" in k:
+					del checkpoint['model_state_dict'][k]
 			model.load_state_dict(checkpoint['model_state_dict'])
 			return model, checkpoint['epoch'], checkpoint['valid_score']
 	return model, 0, -1
