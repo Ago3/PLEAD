@@ -44,7 +44,8 @@ AVAILABLE_TASKS = [
 	'intent_and_slot_filling',
 	# 'slots_to_intent',
 	'functionality_tests',
-	'cad'
+	'cad',
+        'hatecheck',
 ]
 
 AVAILABLE_MODELS_BY_TASK = {
@@ -75,7 +76,6 @@ HATECHECK_DIR = DATA_DIR + 'classification/hatecheck/'
 HATECHECK_FILES = ["counter_quote_nh.tsv",
 	"derog_dehum_h.tsv",
 	"derog_neg_attrib_h.tsv",
-	"hatecheck.csv",
 	"ident_pos_nh.tsv",
 	"negate_pos_h.tsv",
 	"phrase_question_h.tsv",

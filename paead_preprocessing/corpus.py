@@ -19,7 +19,7 @@ class Corpus():
 		self.task_name = task_name
 		self.ids_to_instances = defaultdict(list)
 		self.fullids_to_instances = {}
-		if task_name in ['aaa', 'cad']:
+		if task_name in ['aaa', 'cad', 'hatecheck']:
 			self.__create_aaa_corpus__()
 		elif not (extended_dataset or augmented_dataset):
 			self.__create_corpus_with_annotations__(task_name, toy)
