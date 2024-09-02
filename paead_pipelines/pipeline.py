@@ -217,6 +217,7 @@ def pipeline_aaa(model_name, corpus, aaa_corpus, seed):
 		trainer.test(model=model, ckpt_path=BERTTAG_AAA_CKPT, dataloaders=summary_data.aaa_test_dataloaders())
 		return
 
+	EVAL_FILES = AAA_FILES if aaa_corpus.task_name == "aaa" else HATECHECK_FILES
 	split_ids = corpus.get_split_idxs()
 	is_training_set = [True, False, False]
 	datasets = [Dataset(args, corpus, split_idxs, is_training_set[idx]) for idx, split_idxs in enumerate(split_ids)]
@@ -228,7 +229,7 @@ def pipeline_aaa(model_name, corpus, aaa_corpus, seed):
 	else:
 		model = Model(datasets[0])
 	aaa_datasets = [Dataset(args, aaa_corpus, split_idxs, False) for split_idxs in aaa_corpus.get_split_idxs()]
-	for testname, testset in zip(AAA_FILES, aaa_datasets):
+	for testname, testset in zip(EVAL_FILES, aaa_datasets):
 		print('Current test: ', testname)
 		with open(aaa_files_dir + f'{seed}_' + testname, 'w+') as out:
 			if model_name == 'token_tagging_embeddings':
@@ -259,7 +260,7 @@ def run_pipeline(task_name, model_name, toy=False, extended_dataset=False, seed=
 	if task_name in ['binary_classification', 'classification']:
 		corpus = get_corpus(task_name=task_name, toy=toy, extended_dataset=extended_dataset, transform=None, augmented_dataset=augmented_dataset)
 		pipeline_classification(model_name, corpus, seed)
-	if task_name in ['aaa']:
+	if task_name in ['aaa', 'hatecheck']:
 		corpus = get_corpus(task_name='binary_classification', toy=toy, extended_dataset=extended_dataset)
 		aaa_corpus = get_corpus(task_name=task_name, toy=toy, extended_dataset=extended_dataset)
 		pipeline_aaa(model_name, corpus, aaa_corpus, seed)

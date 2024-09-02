@@ -44,6 +44,7 @@ def load_checkpoint(model, modeldir, modelfile, seed=None):
 			device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 			checkpoint = torch.load(modeldir + filename, map_location=device)
 			print('Loading model from epoch: ', checkpoint['epoch'])
+			# Maybe want to delete these fields only for the Roberta model?
 			for k, v in checkpoint['model_state_dict'].items():
 				if "class_weights" in k or "loss_fct" in k:
 					del checkpoint['model_state_dict'][k]

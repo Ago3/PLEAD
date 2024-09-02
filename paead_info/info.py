@@ -52,6 +52,7 @@ AVAILABLE_MODELS_BY_TASK = {
 	'classification': ['roberta'],
 	'intent_and_slot_filling': ['token_tagging_embeddings','litbart', 'litmsbart', 'litmsbart_with_slot2intent', 'bert_token_tagging'],
 	'aaa': ['roberta', 'token_tagging_embeddings', 'litbart', 'litmsbart', 'litmsbart_with_slot2intent', 'bert_token_tagging'],
+	'hatecheck': ['roberta', 'token_tagging_embeddings', 'litbart', 'litmsbart', 'litmsbart_with_slot2intent', 'bert_token_tagging'],
 	# 'slots_to_intent': ['slots_to_intent'],
 	'functionality_tests': [None],
 }
@@ -70,6 +71,38 @@ AUGMENTED_CORPUS_FILE = {
 
 AAA_DIR = DATA_DIR + 'classification/aaa/'
 AAA_FILES = ['f1_o.tsv', 'hashtag_check.tsv', 'corr_a_to_a.tsv', 'corr_n_to_n.tsv', 'quoting_a_to_n.tsv', 'flip_n_to_a.tsv']
+HATECHECK_DIR = DATA_DIR + 'classification/hatecheck/'
+HATECHECK_FILES = ["counter_quote_nh.tsv",
+	"derog_dehum_h.tsv",
+	"derog_neg_attrib_h.tsv",
+	"hatecheck.csv",
+	"ident_pos_nh.tsv",
+	"negate_pos_h.tsv",
+	"phrase_question_h.tsv",
+	"profanity_nh.tsv",
+	"ref_subs_sent_h.tsv",
+	"slur_h.tsv",
+	"spell_char_del_h.tsv",
+	"spell_leet_h.tsv",
+	"spell_space_del_h.tsv",
+	"target_indiv_nh.tsv",
+	"threat_dir_h.tsv",
+	"counter_ref_nh.tsv",
+	"derog_impl_h.tsv",
+	"derog_neg_emote_h.tsv",
+	"ident_neutral_nh.tsv",
+	"negate_neg_nh.tsv",
+	"phrase_opinion_h.tsv",
+	"profanity_h.tsv",
+	"ref_subs_clause_h.tsv",
+	"slur_homonym_nh.tsv",
+	"slur_reclaimed_nh.tsv",
+	"spell_char_swap_h.tsv",
+	"spell_space_add_h.tsv",
+	"target_group_nh.tsv",
+	"target_obj_nh.tsv",
+	"threat_norm_h.tsv"
+	]
 
 SPLIT_FILES = {
 	'train': DATA_DIR + 'train_idx.csv',

@@ -27,7 +27,7 @@ def get_corpus(task_name, toy, extended_dataset=False, transform=None, augmented
 		corpus = Corpus(task_name, toy=toy, extended_dataset=extended_dataset, augmented_dataset=augmented_dataset)
 		with open(CORPUS_DIR + corpus_file, 'wb+') as out:
 			pickle.dump(corpus, out)
-		if 'classification' not in task_name and not task_name in ['aaa', 'cad']:
+		if 'classification' not in task_name and not task_name in ['aaa', 'cad', 'hatecheck']:
 			create_vocab_file(corpus, CORPUS_DIR + f'{task_name}_{toy}_vocab.txt')
 			create_src_tgt_files(corpus, CORPUS_DIR + f'{task_name}_{toy}')
 			corpus.vocab_file = CORPUS_DIR + f'{task_name}_{toy}_vocab.txt'

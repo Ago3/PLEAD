@@ -62,7 +62,7 @@ class Corpus():
 				annotation_json = {
 					'qid': qID,
 					'copyid': 0,
-					'rule': rule
+					'rule': rule,
 				}
 				instance = InstanceByTask([instance_json, annotation_json], task_name=self.task_name)
 				self.instances.append(instance)
@@ -82,12 +82,11 @@ class Corpus():
 		with open(dataset_file, "r") as f:
 			instances = json.load(f)["instances"]
 		if toy:
-			instances = instances[:5]
+			instances = instances[:50]
 		for instance in instances:
 			annotation = {
 				"qid": instance["ID"],
 				"copyid": 0,
-				# "opinionid": 0,
 				'rule': instance["rule"],
 				'text': instance["reconstructed_prompt"]["text"],
 				'tree': instance["layered_tree"]
@@ -103,8 +102,8 @@ class Corpus():
 		print('Creating corpus...')
 		qids = 0
 		self.split_idxs = []
-		files = AAA_FILES if self.task_name == 'aaa' else CAD_FILES
-		main_dir = AAA_DIR if self.task_name == 'aaa' else CAD_DIR
+		files = AAA_FILES if self.task_name == 'aaa' else (CAD_FILES if self.task_name == "cad" else HATECHECK_FILES)
+		main_dir = AAA_DIR if self.task_name == 'aaa' else (CAD_DIR if self.task_name == "cad" else HATECHECK_DIR)
 		for dataset_file in files:
 			print('Current file: ', dataset_file)
 			current_split = []
@@ -202,7 +201,7 @@ class Corpus():
 		print('Training set extended: ', len(self.split_idxs[0]))
 
 	def check_and_extend_with_shuffled_instances(self):
-		assert USE_SHUFFLING_AUGMENTATION in [None, 'negstance', 'nothate', 'all'], f"Value '{USE_SHUFFLING_AUGMENTATION}'' is not supported for shuffling augmentation"
+		assert USE_SHUFFLING_AUGMENTATION in [None, 'negstance', 'nothate', 'all'], f"Value '{USE_SHUFFLING_AUGMENTATION}' is not supported for shuffling augmentation"
 		if not USE_SHUFFLING_AUGMENTATION: return
 		if USE_SHUFFLING_AUGMENTATION == 'negstance':
 			criterium = (lambda x: 'SL:NegativeStance' in x.tokenized_label)
