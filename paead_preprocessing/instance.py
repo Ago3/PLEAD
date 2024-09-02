@@ -130,9 +130,9 @@ class InstanceByTask(Instance):
 			self.automatic_chunks = [c for c in predicted_chunks if c not in string.punctuation]
 
 	def __set_label__(self, task_name):
-		if task_name == 'binary_classification':
+		if task_name in ['binary_classification', 'aaa', 'hatecheck']:
 			rule = self.rule if not (self.rule == 'animosity') else 'derogation'
-			label = 1 if rule in HATEFUL_RULES else 0
+			label = 0 if rule =='nothate' else 1
 			tokenized_label = None
 		elif task_name == 'classification':
 			rule = self.rule if not (self.rule == 'animosity') else 'derogation'
